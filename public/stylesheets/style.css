@@ -16,6 +16,11 @@ html, body{
 	height: 100%;
 }
 
+#splash a:link{
+	text-decoration: none;
+}
+
+
 a {
   color: #00B7FF;
 }

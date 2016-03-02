@@ -12,7 +12,7 @@ router.get('/map', function(req, res, next) {
   	var all_incidents = incidents;
   	db.get_distinct_locations(function (err, locations) {
   		db.location_frequency(function (err, frequencies) {
-  			console.log(all_incidents);
+  			//console.log(all_incidents);
   			res.render('index', {incidents : incidents, locations : locations, frequencies : frequencies});
   		})
   	})
