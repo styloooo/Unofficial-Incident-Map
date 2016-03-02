@@ -1,0 +1,82 @@
+extends layout
+
+block content
+  div(id="incidentMap")
+
+  script(type="text/javascript").
+    function initMap() {
+
+    var infoWindow = new google.maps.InfoWindow();
+    var incidentCircle;
+
+      var mapOptions = {
+        zoom: 15,
+        center: new google.maps.LatLng(40.1108881, -88.2312294),
+        zoom: 15,
+        disableDefaultUI: true,
+        streetViewControl: false,
+        mapTypeControl: false
+      }
+      var map = new google.maps.Map(document.getElementById('incidentMap'), mapOptions);
+
+      var locations = !{JSON.stringify(locations)};
+
+      for(var i = 0; i < locations.length; i++){
+        loc = locations[i].location;
+        lat = locations[i].lat;
+        lng = locations[i].lng;
+
+        var frequencies = !{JSON.stringify(frequencies)};
+
+        var circleRadius;
+        var frequency;
+
+        for(var j = 0; j < frequencies.length; j++){
+          var place = frequencies[j];
+          if(place.location == loc){
+            circleRadius = Math.sqrt(place['COUNT(LOCATION)'] * 500);
+            frequency = place['COUNT(LOCATION)'];
+            console.log(frequency);
+          }
+
+        }
+
+        console.log(circleRadius);
+        
+        var magnitudeOptions = {
+          map: map,
+          center: new google.maps.LatLng(lat, lng),
+          radius: circleRadius,
+          infoWindowIndex: i,
+          strokeColor: '#FF0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#FF0000',
+          fillOpacity: 0.35
+        };
+
+        incidentCircle = new google.maps.Circle(magnitudeOptions) 
+
+        var incidents = !{JSON.stringify(incidents)}
+
+        function consolidate_incidents(location){
+          var incident_list = "<strong>Charges:</strong><br>"
+          for(var k = 0; k < incidents.length; k++){
+            if(incidents[k].location == location){
+              incident_list += incidents[k].charge + "<br>";
+              console.log(incidents[k].charge)
+            }
+          }
+          return incident_list;
+        }
+
+        google.maps.event.addListener(incidentCircle, 'click', (function(incidentCircle, i) {
+          return function() {
+            infoWindow.setContent(locations[i].location +"<br>" + consolidate_incidents(locations[i].location));
+            infoWindow.setPosition(incidentCircle.getCenter());
+            infoWindow.open(map);
+          }
+        })(incidentCircle, i));
+
+      }
+    }
